@@ -1,0 +1,10 @@
+# OS/editor clutter
+.DS_Store
+Thumbs.db
+*.bak
+*.swp
+
+# Note: content.js is intentionally NOT listed here.
+# It has to exist in the repo for the published site to work, so it can't be
+# gitignored in the normal sense. Instead, use the "skip-worktree" trick below
+# to keep your real test content local-only. See HOW_TO_KEEP_CONTENT_PRIVATE.md.
