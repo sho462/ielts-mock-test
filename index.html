@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IELTS on Computer - Mock Test</title>
+<style>
+  :root{
+    --bg-page:#F4F4F4; --bg-panel:#FFFFFF;
+    --accent-blue:#004F9E; --accent-blue-dark:#003B78;
+    --border-light:#D5D5D5; --border-mid:#B0B0B0;
+    --text-main:#1A1A1A; --text-muted:#5A5A5A;
+    --flag-color:#004F9E; --answered-bg:#004F9E; --answered-text:#FFFFFF;
+    --danger:#C0392B; --warning:#D98600;
+    --highlight-bg:#FFEB3B; --note-bg:#FFF176; --note-border:#F9A825; --note-popup-bg:#FFF9C4;
+    --font-body: Arial, Helvetica, sans-serif;
+    --font-size-base: 16px;
+  }
+  html[data-textsize="large"]{ --font-size-base: 19px; }
+  html[data-textsize="xl"]{ --font-size-base: 23px; }
+  html[data-theme="black-yellow"]{ --bg-page:#000; --bg-panel:#000; --text-main:#FF0; --text-muted:#FF6; --border-light:#FF0; --border-mid:#FF0; --accent-blue:#FF0; --accent-blue-dark:#CC0; --answered-bg:#FF0; --answered-text:#000; }
+  html[data-theme="white-black"]{ --bg-page:#000; --bg-panel:#000; --text-main:#FFF; --text-muted:#CCC; --border-light:#FFF; --border-mid:#FFF; --accent-blue:#FFF; --accent-blue-dark:#DDD; --answered-bg:#FFF; --answered-text:#000; }
+  html[data-theme="yellow-blue"]{ --bg-page:#00008B; --bg-panel:#00008B; --text-main:#FF0; --text-muted:#FF9; --border-light:#FF0; --border-mid:#FF0; --accent-blue:#FF0; --accent-blue-dark:#CC0; --answered-bg:#FF0; --answered-text:#00008B; }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; height:100%; }
+  body{ font-family:var(--font-body); font-size:var(--font-size-base); background:var(--bg-page); color:var(--text-main); display:flex; flex-direction:column; min-height:100vh; }
+  button{ font-family:inherit; cursor:pointer; }
+  input, select, textarea{ font-family:inherit; font-size:1em; color:var(--text-main); background:var(--bg-panel); }
+  button:disabled{ opacity:0.45; cursor:not-allowed; }
+
+  header.test-header{ background:var(--bg-panel); border-bottom:1px solid var(--border-light); display:flex; align-items:center; justify-content:space-between; padding:8px 16px; flex-wrap:wrap; gap:8px; }
+  .candidate-block{ display:flex; flex-direction:column; font-size:0.8em; line-height:1.3; color:var(--text-muted); min-width:180px; }
+  .candidate-block strong{ color:var(--text-main); font-size:1.05em; }
+  .section-indicator{ background:var(--accent-blue); color:#fff; padding:6px 18px; font-weight:bold; border-radius:3px; letter-spacing:0.5px; font-size:0.95em; }
+  .timer-block{ display:flex; align-items:center; gap:8px; }
+  .timer-display{ font-weight:bold; font-size:1.3em; padding:4px 12px; border:2px solid var(--border-mid); border-radius:4px; min-width:100px; text-align:center; }
+  .timer-display.warn{ border-color:var(--warning); color:var(--warning); }
+  .timer-display.danger{ border-color:var(--danger); color:var(--danger); animation:pulse 1s infinite; }
+  .timer-display.hidden-time{ visibility:hidden; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.55;} }
+  .icon-btn{ background:transparent; border:1px solid var(--border-mid); border-radius:4px; padding:6px 10px; font-size:0.85em; color:var(--text-main); display:flex; align-items:center; gap:5px; }
+  .icon-btn:hover{ background:var(--bg-page); }
+  .global-tools{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .dropdown-wrap{ position:relative; }
+  .dropdown-panel{ position:absolute; top:110%; right:0; background:var(--bg-panel); border:1px solid var(--border-mid); border-radius:4px; padding:10px; box-shadow:0 4px 10px rgba(0,0,0,0.15); display:none; z-index:50; min-width:220px; }
+  .dropdown-panel.open{ display:block; }
+  .dropdown-panel h4{ margin:0 0 6px 0; font-size:0.85em; color:var(--text-muted); }
+  .dropdown-panel .opt-row{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .dropdown-panel .opt-row:last-child{ margin-bottom:0; }
+  .mini-btn{ border:1px solid var(--border-mid); background:transparent; padding:4px 8px; border-radius:3px; font-size:0.8em; }
+  .mini-btn.selected{ background:var(--accent-blue); color:#fff; border-color:var(--accent-blue); }
+  .volume-row{ display:flex; align-items:center; gap:6px; }
+  .volume-row input[type="range"]{ width:90px; }
+
+  main.work-area{ flex:1; padding:16px; overflow:auto; position:relative; display:flex; flex-direction:column; }
+  .dev-switcher{ display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+  .dev-switcher button{ padding:6px 14px; border-radius:4px; border:1px solid var(--border-mid); background:var(--bg-panel); }
+  .dev-switcher button.active{ background:var(--accent-blue); color:#fff; border-color:var(--accent-blue); }
+
+  .split-pane{ flex:1; display:flex; min-height:400px; border:1px solid var(--border-light); border-radius:4px; overflow:hidden; background:var(--bg-panel); }
+  .split-left{ overflow:auto; padding:20px; flex-basis:50%; }
+  .split-divider{ width:6px; background:var(--border-light); cursor:col-resize; flex-shrink:0; }
+  .split-divider:hover{ background:var(--accent-blue); }
+  .split-right{ overflow:auto; padding:20px; flex:1; border-left:1px solid var(--border-light); }
+  .full-pane{ flex:1; overflow:auto; padding:20px; border:1px solid var(--border-light); border-radius:4px; background:var(--bg-panel); }
+
+  .passage-title{ font-weight:bold; font-size:1.1em; margin-bottom:12px; }
+  .passage-body{ line-height:1.75; font-size:1.02em; white-space:pre-line; }
+  .paragraph-block{ margin-bottom:14px; }
+  .paragraph-label{ font-weight:bold; margin-right:6px; color:var(--accent-blue); }
+
+  .user-highlight{ background:var(--highlight-bg); border-radius:2px; }
+  .user-note{ background:var(--note-bg); border-bottom:2px dotted var(--note-border); cursor:pointer; border-radius:2px; }
+  .selection-toolbar{ position:absolute; display:none; background:var(--bg-panel); border:1px solid var(--border-mid); border-radius:5px; box-shadow:0 4px 12px rgba(0,0,0,0.25); z-index:300; overflow:hidden; }
+  .selection-toolbar.open{ display:flex; }
+  .selection-toolbar button{ background:var(--bg-panel); border:none; padding:8px 12px; font-size:0.82em; color:var(--text-main); display:flex; align-items:center; gap:5px; border-right:1px solid var(--border-light); white-space:nowrap; }
+  .selection-toolbar button:last-child{ border-right:none; }
+  .selection-toolbar button:hover{ background:var(--bg-page); }
+  .swatch{ width:11px; height:11px; border-radius:50%; background:var(--highlight-bg); border:1px solid var(--note-border); display:inline-block; }
+  .note-popup{ position:absolute; display:none; background:var(--note-popup-bg); border:1px solid var(--note-border); border-radius:6px; box-shadow:0 6px 16px rgba(0,0,0,0.25); padding:10px; width:230px; z-index:301; }
+  .note-popup.open{ display:block; }
+  .note-popup textarea{ width:100%; min-height:60px; resize:vertical; border:1px solid var(--note-border); border-radius:4px; padding:6px; font-size:0.85em; }
+  .note-popup .note-actions, .note-viewer .note-actions{ display:flex; justify-content:flex-end; gap:6px; margin-top:8px; }
+  .note-popup .note-actions button, .note-viewer .note-actions button{ padding:5px 10px; font-size:0.8em; border-radius:4px; border:1px solid var(--note-border); background:#fff; }
+  .note-popup .note-actions button.primary{ background:var(--note-border); color:#fff; }
+  .note-viewer{ position:absolute; display:none; background:var(--note-popup-bg); border:1px solid var(--note-border); border-radius:6px; box-shadow:0 6px 16px rgba(0,0,0,0.25); padding:10px 12px; max-width:230px; z-index:301; font-size:0.85em; }
+  .note-viewer.open{ display:block; }
+
+  .qblock{ margin-bottom:22px; padding-bottom:16px; border-bottom:1px dashed var(--border-light); scroll-margin-top:12px; }
+  .qblock.current-highlight{ outline:2px solid var(--accent-blue); outline-offset:4px; border-radius:4px; }
+  .qblock h3{ font-size:0.95em; margin:0 0 10px 0; color:var(--text-muted); }
+  .qnum{ display:inline-flex; align-items:center; justify-content:center; min-width:22px; height:22px; background:var(--accent-blue); color:#fff; border-radius:3px; font-size:0.75em; margin-right:8px; }
+  .qtext{ margin:6px 0; line-height:1.6; }
+  .radio-row{ display:flex; align-items:center; gap:6px; margin:4px 0; }
+  .radio-row label{ cursor:pointer; }
+  .inline-input{ border:1px solid var(--border-mid); border-radius:3px; padding:3px 6px; width:130px; margin:0 3px; }
+  select.inline-select{ border:1px solid var(--border-mid); border-radius:3px; padding:4px 6px; }
+  .note-block{ white-space:pre-line; line-height:2.1; font-size:1.02em; border:1px solid var(--border-light); border-radius:4px; padding:16px; background:var(--bg-page); }
+  .options-box{ border:1px solid var(--border-mid); border-radius:4px; padding:10px 14px; margin-bottom:14px; background:var(--bg-page); font-size:0.9em; }
+  .options-box .opt-line{ margin:2px 0; }
+  .checkbox-row{ display:flex; align-items:center; gap:6px; margin:4px 0; }
+  .flow-list{ list-style:none; padding:0; margin:0; }
+  .flow-list li{ display:flex; align-items:center; gap:10px; padding:8px 0; border-left:3px solid var(--accent-blue); padding-left:12px; margin-bottom:4px; }
+
+  .gate-screen{ text-align:center; padding:50px 20px; }
+  .gate-screen button.start-btn{ background:var(--accent-blue); color:#fff; border:none; padding:12px 28px; border-radius:5px; font-size:1em; font-weight:bold; margin-top:16px; }
+  .playing-badge{ display:inline-flex; align-items:center; gap:8px; background:#FFF3CD; color:#7A5B00; border:1px solid var(--warning); padding:8px 14px; border-radius:4px; font-size:0.85em; margin-top:14px; }
+
+  .writing-tabs{ display:flex; gap:6px; margin-bottom:10px; }
+  .writing-tab{ padding:6px 16px; border:1px solid var(--border-mid); border-radius:4px 4px 0 0; background:var(--bg-page); }
+  .writing-tab.active{ background:var(--accent-blue); color:#fff; border-color:var(--accent-blue); font-weight:bold; }
+  .diagram-steps{ display:flex; flex-direction:column; gap:0; margin-top:14px; }
+  .diagram-step{ background:#EAF2FB; border:1px solid var(--accent-blue); border-radius:5px; padding:10px 12px; font-size:0.88em; }
+  .diagram-arrow{ text-align:center; color:var(--accent-blue); font-size:1.2em; line-height:1; padding:2px 0; }
+  .writing-textarea{ width:100%; height:320px; border:1px solid var(--border-mid); border-radius:4px; padding:12px; resize:vertical; line-height:1.5; }
+  .word-counter{ margin-top:8px; font-size:0.85em; color:var(--text-muted); }
+  .word-counter.below-min{ color:var(--danger); font-weight:bold; }
+
+  footer.test-footer{ background:var(--bg-panel); border-top:1px solid var(--border-light); padding:8px 16px; }
+  .part-tabs{ display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
+  .part-tab{ padding:5px 14px; border:1px solid var(--border-mid); border-radius:4px 4px 0 0; background:var(--bg-page); font-size:0.85em; color:var(--text-muted); }
+  .part-tab.active{ background:var(--accent-blue); color:#fff; border-color:var(--accent-blue); font-weight:bold; }
+  .footer-main-row{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+  .review-checkbox-row{ display:flex; align-items:center; gap:6px; font-size:0.85em; white-space:nowrap; }
+  .palette-scroll{ flex:1; overflow-x:auto; display:flex; gap:5px; padding:4px 2px; }
+  .q-btn{ position:relative; min-width:30px; height:30px; border:1px solid var(--border-mid); background:var(--bg-panel); color:var(--text-main); border-radius:3px; font-size:0.8em; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .q-btn.current{ outline:2px solid var(--accent-blue); outline-offset:1px; }
+  .q-btn.answered{ background:var(--answered-bg); color:var(--answered-text); font-weight:bold; border-color:var(--answered-bg); }
+  .q-btn.flagged::after{ content:""; position:absolute; top:-4px; right:-4px; width:9px; height:9px; background:var(--flag-color); border-radius:50%; border:1px solid var(--bg-panel); }
+  .nav-controls{ display:flex; gap:8px; flex-shrink:0; }
+  .nav-controls button{ padding:6px 16px; border-radius:4px; border:1px solid var(--accent-blue); background:var(--accent-blue); color:#fff; font-size:0.85em; font-weight:bold; }
+  .nav-controls button.submit-btn{ background:var(--danger); border-color:var(--danger); }
+
+  .modal-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:400; }
+  .modal-overlay.open{ display:flex; }
+  .modal-box{ background:var(--bg-panel); border-radius:6px; padding:24px; max-width:420px; width:90%; box-shadow:0 10px 30px rgba(0,0,0,0.3); }
+  .modal-box h3{ margin-top:0; }
+  .modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:18px; }
+  .modal-actions button{ padding:7px 16px; border-radius:4px; border:1px solid var(--border-mid); background:var(--bg-page); }
+  .modal-actions button.primary{ background:var(--accent-blue); color:#fff; border-color:var(--accent-blue); }
+
+  @media (max-width: 820px){
+    .candidate-block{ display:none; }
+    .split-pane{ flex-direction:column; }
+    .split-divider{ display:none; }
+    .split-left, .split-right{ flex-basis:auto !important; border-left:none; border-top:1px solid var(--border-light); }
+    .footer-main-row{ flex-direction:column; align-items:stretch; }
+    .palette-scroll{ order:1; }
+    .nav-controls{ order:2; justify-content:space-between; }
+    .review-checkbox-row{ order:0; }
+  }
+  @media print{
+    header.test-header, .dev-switcher, footer.test-footer, .modal-actions, .part-tabs{ display:none !important; }
+    body{ background:#fff; }
+    .results-report{ border:none; padding:0; }
+    #reviewTable td, #reviewTable th{ border-bottom:1px solid #999 !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="test-header">
+  <div class="candidate-block">
+    <strong id="candidateName">Ayşe Yılmaz</strong>
+    <span>Candidate ID: <span id="candidateId">TR-0294817</span></span>
+    <span>Passport No: <span id="candidatePassport">U12345678</span></span>
+  </div>
+  <div class="section-indicator" id="sectionIndicator">Listening</div>
+  <div class="timer-block">
+    <button class="icon-btn" id="hideTimeBtn" title="Hide/show the timer">Hide Time</button>
+    <div class="timer-display" id="timerDisplay">30:00</div>
+  </div>
+  <div class="global-tools">
+    <div class="dropdown-wrap">
+      <button class="icon-btn" id="textSizeToggle">Text Size ▾</button>
+      <div class="dropdown-panel" id="textSizePanel">
+        <h4>Text Size</h4>
+        <div class="opt-row">
+          <button class="mini-btn selected" data-size="normal">Normal</button>
+          <button class="mini-btn" data-size="large">Large</button>
+          <button class="mini-btn" data-size="xl">Extra Large</button>
+        </div>
+      </div>
+    </div>
+    <div class="dropdown-wrap">
+      <button class="icon-btn" id="themeToggle">Colours ▾</button>
+      <div class="dropdown-panel" id="themePanel">
+        <h4>Colour Theme</h4>
+        <div class="opt-row">
+          <button class="mini-btn selected" data-theme="standard">Black on White</button>
+          <button class="mini-btn" data-theme="black-yellow">Black on Yellow</button>
+          <button class="mini-btn" data-theme="white-black">White on Black</button>
+          <button class="mini-btn" data-theme="yellow-blue">Yellow on Blue</button>
+        </div>
+      </div>
+    </div>
+    <div class="volume-row" id="volumeRow" style="display:flex;">
+      <span title="Volume">&#128266;</span>
+      <input type="range" id="volumeSlider" min="0" max="100" value="70">
+    </div>
+    <button class="icon-btn" id="helpBtn">Help</button>
+  </div>
+</header>
+
+<main class="work-area" id="workArea">
+  <div class="dev-switcher" id="devSwitcher">
+    <button class="module-btn active" data-module="listening">Listening</button>
+    <button class="module-btn" data-module="reading">Reading</button>
+    <button class="module-btn" data-module="writing">Writing</button>
+  </div>
+
+  <div id="moduleRoot"></div>
+
+  <div class="selection-toolbar" id="selectionToolbar">
+    <button id="toolbarHighlight"><span class="swatch"></span> Highlight</button>
+    <button id="toolbarNote">&#128221; Add Note</button>
+  </div>
+  <div class="note-popup" id="notePopup">
+    <textarea id="noteTextarea" placeholder="Type your note..."></textarea>
+    <div class="note-actions">
+      <button id="noteCancelBtn">Cancel</button>
+      <button class="primary" id="noteSaveBtn">Save</button>
+    </div>
+  </div>
+  <div class="note-viewer" id="noteViewer">
+    <div id="noteViewerText"></div>
+    <div class="note-actions">
+      <button id="noteDeleteBtn">Delete</button>
+      <button id="noteCloseBtn">Close</button>
+    </div>
+  </div>
+</main>
+
+<footer class="test-footer">
+  <div class="part-tabs" id="partTabs"></div>
+  <div class="footer-main-row">
+    <div class="review-checkbox-row">
+      <input type="checkbox" id="reviewCheckbox">
+      <label for="reviewCheckbox">Review</label>
+    </div>
+    <div class="palette-scroll" id="paletteScroll"></div>
+    <div class="nav-controls">
+      <button id="backBtn">&lt; Back</button>
+      <button id="nextBtn">Next &gt;</button>
+      <button class="submit-btn" id="submitBtn">Submit</button>
+    </div>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="helpModal">
+  <div class="modal-box">
+    <h3>Help</h3>
+    <p>Use the question palette to jump between questions, tick "Review" to flag one for later, and use Back / Next to move sequentially. In Reading, select passage text to highlight it or attach a note. In Listening, click "Start" to begin each part's audio - once started it cannot be paused, just like the real test.</p>
+    <div class="modal-actions"><button class="primary" id="closeHelp">Close</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="submitModal">
+  <div class="modal-box">
+    <h3>Submit test?</h3>
+    <p id="submitModalBody">You have <strong id="unansweredCount">0</strong> unanswered question(s) and <strong id="flaggedCount">0</strong> flagged for review.</p>
+    <p>Are you sure you want to submit?</p>
+    <div class="modal-actions">
+      <button id="cancelSubmit">Cancel</button>
+      <button class="primary" id="confirmSubmit">Submit anyway</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="timeUpModal">
+  <div class="modal-box">
+    <h3>Time is up</h3>
+    <p>Your time for this section has ended. Your answers have been submitted automatically.</p>
+    <div class="modal-actions"><button class="primary" id="ackTimeUp">OK</button></div>
+  </div>
+</div>
+
+<script src="content.js"></script>
+<script>
+/* ===================== MODULE / PART DEFINITIONS ===================== */
+const MODULE_CONFIG = {
+  listening: { label: "Listening", durationSec: 30*60, parts: ["Part 1","Part 2","Part 3","Part 4"], ranges: [[1,10],[11,20],[21,30],[31,40]], totalQuestions: 40 },
+  reading:   { label: "Reading",   durationSec: 60*60, parts: ["Passage 1","Passage 2","Passage 3"], ranges: [[1,13],[14,26],[27,40]], totalQuestions: 40 },
+  writing:   { label: "Writing",   durationSec: 60*60, parts: ["Task 1","Task 2"], ranges: [[1,1],[2,2]], totalQuestions: 2 }
+};
+
+const state = {
+  module: "listening",
+  currentPart: 0,
+  currentQuestion: 1,
+  responses: { listening: {}, reading: {}, writing: {} },   // id -> value (string) or array (multi-select groups keyed by "id1_id2")
+  flags: { listening: new Set(), reading: new Set(), writing: new Set() },
+  audioStarted: { listening: [false,false,false,false] },   // per-part gate
+  audioPlaying: false,
+  timeHidden: false,
+  remainingSec: MODULE_CONFIG.listening.durationSec,
+  timerInterval: null,
+  timerRunning: false
+};
+
+function currentConfig(){ return MODULE_CONFIG[state.module]; }
+
+/* ===================== TIMER ===================== */
+function startTimer(){
+  clearInterval(state.timerInterval);
+  state.timerRunning = true;
+  updateTimerDisplay();
+  state.timerInterval = setInterval(() => {
+    if (state.remainingSec > 0){
+      state.remainingSec--;
+      updateTimerDisplay();
+    } else {
+      clearInterval(state.timerInterval);
+      document.getElementById("timeUpModal").classList.add("open");
+    }
+  }, 1000);
+}
+function formatTime(sec){
+  const m = Math.floor(sec/60).toString().padStart(2,"0");
+  const s = Math.floor(sec%60).toString().padStart(2,"0");
+  return `${m}:${s}`;
+}
+function updateTimerDisplay(){
+  const el = document.getElementById("timerDisplay");
+  el.textContent = formatTime(state.remainingSec);
+  el.classList.remove("warn","danger");
+  if (state.remainingSec <= 5*60) el.classList.add("danger");
+  else if (state.remainingSec <= 10*60) el.classList.add("warn");
+  el.classList.toggle("hidden-time", state.timeHidden);
+}
+document.getElementById("hideTimeBtn").addEventListener("click", () => {
+  state.timeHidden = !state.timeHidden;
+  document.getElementById("hideTimeBtn").textContent = state.timeHidden ? "Show Time" : "Hide Time";
+  updateTimerDisplay();
+});
+
+/* ===================== DROPDOWNS ===================== */
+function toggleDropdown(id){
+  document.querySelectorAll(".dropdown-panel").forEach(p => { if (p.id !== id) p.classList.remove("open"); });
+  document.getElementById(id).classList.toggle("open");
+}
+document.getElementById("textSizeToggle").addEventListener("click", () => toggleDropdown("textSizePanel"));
+document.getElementById("themeToggle").addEventListener("click", () => toggleDropdown("themePanel"));
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".dropdown-wrap")) document.querySelectorAll(".dropdown-panel").forEach(p => p.classList.remove("open"));
+});
+document.querySelectorAll("#textSizePanel [data-size]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#textSizePanel .mini-btn").forEach(b => b.classList.remove("selected"));
+    btn.classList.add("selected");
+    document.documentElement.setAttribute("data-textsize", btn.dataset.size);
+  });
+});
+document.querySelectorAll("#themePanel [data-theme]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#themePanel .mini-btn").forEach(b => b.classList.remove("selected"));
+    btn.classList.add("selected");
+    document.documentElement.setAttribute("data-theme", btn.dataset.theme);
+  });
+});
+document.getElementById("helpBtn").addEventListener("click", () => document.getElementById("helpModal").classList.add("open"));
+document.getElementById("closeHelp").addEventListener("click", () => document.getElementById("helpModal").classList.remove("open"));
+document.getElementById("ackTimeUp").addEventListener("click", () => document.getElementById("timeUpModal").classList.remove("open"));
+
+/* ===================== GROUP LOOKUP (multi-select "choose two" questions) ===================== */
+function getMultiSelectGroups(){
+  return TEST_CONTENT.listening.part2.multiSelect; // [{ids, options, answers}, ...]
+}
+function findGroupForId(id){
+  return getMultiSelectGroups().find(g => g.ids.includes(id)) || null;
+}
+function groupKey(g){ return g.ids.join("_"); }
+
+/* ===================== ANSWER STATE HELPERS ===================== */
+function setResponse(module, id, value){
+  state.responses[module][id] = value;
+  renderPalette();
+}
+function isAnswered(module, id){
+  if (module === "listening"){
+    const g = findGroupForId(id);
+    if (g){
+      const arr = state.responses.listening[groupKey(g)] || [];
+      return arr.length === g.ids.length;
+    }
+  }
+  const v = state.responses[module][id];
+  if (Array.isArray(v)) return v.length > 0;
+  return v !== undefined && v !== null && String(v).trim().length > 0;
+}
+function getPartIndexForQuestion(module, id){
+  const ranges = MODULE_CONFIG[module].ranges;
+  return ranges.findIndex(([s,e]) => id >= s && id <= e);
+}
+
+/* ===================== MODULE SWITCHING ===================== */
+document.querySelectorAll(".module-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (state.audioPlaying) return; // non-pausable: block navigation while listening audio plays
+    window.speechSynthesis && window.speechSynthesis.cancel();
+    state.module = btn.dataset.module;
+    state.currentPart = 0;
+    state.currentQuestion = MODULE_CONFIG[state.module].ranges[0][0];
+    state.remainingSec = currentConfig().durationSec;
+    document.querySelectorAll(".module-btn").forEach(b => b.classList.toggle("active", b === btn));
+    document.getElementById("sectionIndicator").textContent = currentConfig().label;
+    document.getElementById("volumeRow").style.display = state.module === "listening" ? "flex" : "none";
+    hideToolbar(); hideNotePopup(); hideNoteViewer();
+    renderPartTabs();
+    renderModule();
+    renderPalette();
+    startTimer();
+  });
+});
+
+/* ===================== PART TABS ===================== */
+function renderPartTabs(){
+  const wrap = document.getElementById("partTabs");
+  wrap.innerHTML = "";
+  currentConfig().parts.forEach((label, idx) => {
+    const b = document.createElement("button");
+    b.className = "part-tab" + (idx === state.currentPart ? " active" : "");
+    b.textContent = label;
+    b.disabled = state.audioPlaying && state.module === "listening";
+    b.addEventListener("click", () => {
+      if (state.audioPlaying) return;
+      state.currentPart = idx;
+      state.currentQuestion = MODULE_CONFIG[state.module].ranges[idx][0];
+      renderPartTabs();
+      renderModule();
+    });
+    wrap.appendChild(b);
+  });
+}
+
+/* ===================== QUESTION PALETTE ===================== */
+function renderPalette(){
+  const wrap = document.getElementById("paletteScroll");
+  wrap.innerHTML = "";
+  const total = currentConfig().totalQuestions;
+  for (let i = 1; i <= total; i++){
+    const b = document.createElement("button");
+    b.className = "q-btn";
+    b.textContent = i;
+    if (i === state.currentQuestion) b.classList.add("current");
+    if (isAnswered(state.module, i)) b.classList.add("answered");
+    if (state.flags[state.module].has(i)) b.classList.add("flagged");
+    b.addEventListener("click", () => {
+      if (state.audioPlaying) return;
+      state.currentQuestion = i;
+      state.currentPart = getPartIndexForQuestion(state.module, i);
+      document.getElementById("reviewCheckbox").checked = state.flags[state.module].has(i);
+      renderPartTabs();
+      renderModule();
+      scrollToQuestion(i);
+    });
+    wrap.appendChild(b);
+  }
+  updateSubmitCounts();
+}
+function scrollToQuestion(id){
+  requestAnimationFrame(() => {
+    document.querySelectorAll(".qblock").forEach(el => el.classList.remove("current-highlight"));
+    const el = document.getElementById(`q-block-${id}`);
+    if (el){
+      el.classList.add("current-highlight");
+      if (el.scrollIntoView) el.scrollIntoView({ block: "center" });
+    }
+  });
+}
+
+document.getElementById("reviewCheckbox").addEventListener("change", (e) => {
+  if (e.target.checked) state.flags[state.module].add(state.currentQuestion);
+  else state.flags[state.module].delete(state.currentQuestion);
+  renderPalette();
+});
+document.getElementById("backBtn").addEventListener("click", () => {
+  if (state.audioPlaying) return;
+  if (state.currentQuestion > 1){
+    state.currentQuestion--;
+    state.currentPart = getPartIndexForQuestion(state.module, state.currentQuestion);
+    document.getElementById("reviewCheckbox").checked = state.flags[state.module].has(state.currentQuestion);
+    renderPartTabs(); renderModule(); scrollToQuestion(state.currentQuestion);
+  }
+});
+document.getElementById("nextBtn").addEventListener("click", () => {
+  if (state.audioPlaying) return;
+  if (state.currentQuestion < currentConfig().totalQuestions){
+    state.currentQuestion++;
+    state.currentPart = getPartIndexForQuestion(state.module, state.currentQuestion);
+    document.getElementById("reviewCheckbox").checked = state.flags[state.module].has(state.currentQuestion);
+    renderPartTabs(); renderModule(); scrollToQuestion(state.currentQuestion);
+  }
+});
+
+/* ===================== SUBMIT FLOW ===================== */
+function updateSubmitCounts(){
+  const total = currentConfig().totalQuestions;
+  let answered = 0;
+  for (let i = 1; i <= total; i++) if (isAnswered(state.module, i)) answered++;
+  document.getElementById("unansweredCount").textContent = Math.max(total - answered, 0);
+  document.getElementById("flaggedCount").textContent = state.flags[state.module].size;
+}
+document.getElementById("submitBtn").addEventListener("click", () => {
+  if (state.audioPlaying) return;
+  updateSubmitCounts();
+  document.getElementById("submitModal").classList.add("open");
+});
+document.getElementById("cancelSubmit").addEventListener("click", () => document.getElementById("submitModal").classList.remove("open"));
+document.getElementById("confirmSubmit").addEventListener("click", () => {
+  document.getElementById("submitModal").classList.remove("open");
+  clearInterval(state.timerInterval);
+  state.results[state.module] = computeModuleScore(state.module);
+  state.dashboardModule = state.module;
+  showDashboard();
+});
+
+/* ===================== SCORING ===================== */
+// Approximate, commonly-published raw-score-to-band conversion for indicative purposes only.
+// These are general public reference tables, not reproduced from any specific copyrighted source.
+const LISTENING_BAND_TABLE = [
+  [39,40,9],[37,38,8.5],[35,36,8],[32,34,7.5],[30,31,7],[26,29,6.5],
+  [23,25,6],[18,22,5.5],[16,17,5],[13,15,4.5],[10,12,4],[8,9,3.5],
+  [6,7,3],[4,5,2.5],[0,3,2]
+];
+const READING_BAND_TABLE = [
+  [39,40,9],[37,38,8.5],[35,36,8],[33,34,7.5],[30,32,7],[27,29,6.5],
+  [23,26,6],[19,22,5.5],[15,18,5],[13,14,4.5],[10,12,4],[8,9,3.5],
+  [6,7,3],[4,5,2.5],[0,3,2]
+];
+function rawToBand(raw, table){
+  const row = table.find(([lo,hi]) => raw >= lo && raw <= hi);
+  return row ? row[2] : null;
+}
+function normalizeAnswer(v){ return String(v || "").trim().toLowerCase().replace(/\.$/, ""); }
+function textAnswerCorrect(userVal, q){
+  const candidates = [q.answer, ...(q.altAnswers || [])].map(normalizeAnswer);
+  return candidates.includes(normalizeAnswer(userVal));
+}
+
+function buildListeningReview(){
+  const L = TEST_CONTENT.listening;
+  const rows = [];
+  L.part1.questions.forEach(q => {
+    const user = state.responses.listening[q.id] || "";
+    rows.push({ id: q.id, userAnswer: user || "(blank)", correctAnswer: q.answer, correct: textAnswerCorrect(user, q), marks: 1, earned: textAnswerCorrect(user, q) ? 1 : 0 });
+  });
+  L.part2.matching.items.forEach(item => {
+    const user = state.responses.listening[item.id] || "";
+    const correctLabel = (L.part2.matching.options.find(o => o.key === item.answer) || {}).label || item.answer;
+    rows.push({ id: item.id, userAnswer: user || "(blank)", correctAnswer: `${item.answer} - ${correctLabel}`, correct: user === item.answer, marks: 1, earned: user === item.answer ? 1 : 0 });
+  });
+  L.part2.multiSelect.forEach(g => {
+    const gKey = g.ids.join("_");
+    const selected = state.responses.listening[gKey] || [];
+    const matchCount = selected.filter(k => g.answers.includes(k)).length;
+    rows.push({
+      id: `${g.ids[0]}-${g.ids[1]}`,
+      userAnswer: selected.length ? selected.sort().join(", ") : "(blank)",
+      correctAnswer: [...g.answers].sort().join(", "),
+      correct: matchCount === g.ids.length,
+      marks: g.ids.length,
+      earned: matchCount
+    });
+  });
+  L.part3.multipleChoice.items.forEach(item => {
+    const user = state.responses.listening[item.id] || "";
+    const correctLabel = (item.options.find(o => o.key === item.answer) || {}).label || item.answer;
+    rows.push({ id: item.id, userAnswer: user || "(blank)", correctAnswer: `${item.answer} - ${correctLabel}`, correct: user === item.answer, marks: 1, earned: user === item.answer ? 1 : 0 });
+  });
+  L.part3.flowchart.steps.forEach(step => {
+    const user = state.responses.listening[step.id] || "";
+    const correctLabel = (L.part3.flowchart.options.find(o => o.key === step.answer) || {}).label || step.answer;
+    rows.push({ id: step.id, userAnswer: user || "(blank)", correctAnswer: `${step.answer} - ${correctLabel}`, correct: user === step.answer, marks: 1, earned: user === step.answer ? 1 : 0 });
+  });
+  L.part4.questions.forEach(q => {
+    const user = state.responses.listening[q.id] || "";
+    rows.push({ id: q.id, userAnswer: user || "(blank)", correctAnswer: q.answer, correct: textAnswerCorrect(user, q), marks: 1, earned: textAnswerCorrect(user, q) ? 1 : 0 });
+  });
+  rows.sort((a,b) => (parseInt(a.id) - parseInt(b.id)));
+  return rows;
+}
+
+function buildReadingReview(){
+  const R = TEST_CONTENT.reading;
+  const rows = [];
+  R.passage1.trueFalseNotGiven.items.forEach(item => {
+    const user = state.responses.reading[item.id] || "";
+    rows.push({ id: item.id, userAnswer: user || "(blank)", correctAnswer: item.answer, correct: user === item.answer, marks: 1, earned: user === item.answer ? 1 : 0 });
+  });
+  R.passage1.noteCompletion.questions.forEach(q => {
+    const user = state.responses.reading[q.id] || "";
+    rows.push({ id: q.id, userAnswer: user || "(blank)", correctAnswer: q.answer, correct: textAnswerCorrect(user, q), marks: 1, earned: textAnswerCorrect(user, q) ? 1 : 0 });
+  });
+  R.passage2.matchingParagraphs.items.forEach(item => {
+    const user = state.responses.reading[item.id] || "";
+    rows.push({ id: item.id, userAnswer: user || "(blank)", correctAnswer: item.answer, correct: user === item.answer, marks: 1, earned: user === item.answer ? 1 : 0 });
+  });
+  R.passage2.sentenceCompletion.items.forEach(item => {
+    const user = state.responses.reading[item.id] || "";
+    rows.push({ id: item.id, userAnswer: user || "(blank)", correctAnswer: item.answer, correct: textAnswerCorrect(user, item), marks: 1, earned: textAnswerCorrect(user, item) ? 1 : 0 });
+  });
+  R.passage2.matchingExperts.items.forEach(item => {
+    const user = state.responses.reading[item.id] || "";
+    const name = (R.passage2.matchingExperts.experts.find(e => e.key === item.answer) || {}).name || item.answer;
+    rows.push({ id: item.id, userAnswer: user || "(blank)", correctAnswer: `${item.answer} - ${name}`, correct: user === item.answer, marks: 1, earned: user === item.answer ? 1 : 0 });
+  });
+  R.passage3.multipleChoice.items.forEach(item => {
+    const user = state.responses.reading[item.id] || "";
+    const correctLabel = (item.options.find(o => o.key === item.answer) || {}).label || item.answer;
+    rows.push({ id: item.id, userAnswer: user || "(blank)", correctAnswer: `${item.answer} - ${correctLabel}`, correct: user === item.answer, marks: 1, earned: user === item.answer ? 1 : 0 });
+  });
+  R.passage3.sentenceCompletionMatching.items.forEach(item => {
+    const user = state.responses.reading[item.id] || "";
+    rows.push({ id: item.id, userAnswer: user || "(blank)", correctAnswer: item.answer, correct: user === item.answer, marks: 1, earned: user === item.answer ? 1 : 0 });
+  });
+  R.passage3.yesNoNotGiven.items.forEach(item => {
+    const user = state.responses.reading[item.id] || "";
+    rows.push({ id: item.id, userAnswer: user || "(blank)", correctAnswer: item.answer, correct: user === item.answer, marks: 1, earned: user === item.answer ? 1 : 0 });
+  });
+  rows.sort((a,b) => (parseInt(a.id) - parseInt(b.id)));
+  return rows;
+}
+
+function computeModuleScore(module){
+  if (module === "writing"){
+    return {
+      module,
+      tasks: [1,2].map(n => {
+        const text = state.responses.writing[n] || "";
+        const words = text.trim().length ? text.trim().split(/\s+/).length : 0;
+        const min = TEST_CONTENT.writing[n===1?"task1":"task2"].minWords;
+        return { task: n, words, meetsMin: words >= min, text };
+      })
+    };
+  }
+  const rows = module === "listening" ? buildListeningReview() : buildReadingReview();
+  const raw = rows.reduce((sum,r) => sum + r.earned, 0);
+  const max = rows.reduce((sum,r) => sum + r.marks, 0);
+  const band = rawToBand(raw, module === "listening" ? LISTENING_BAND_TABLE : READING_BAND_TABLE);
+  return { module, rows, raw, max, band };
+}
+
+/* ===================== RESULTS DASHBOARD ===================== */
+state.results = { listening: null, reading: null, writing: null };
+state.dashboardMode = false;
+state.dashboardModule = null;
+
+function showDashboard(){
+  state.dashboardMode = true;
+  document.getElementById("devSwitcher").style.display = "none";
+  document.querySelector("footer.test-footer").style.display = "none";
+  renderDashboard();
+}
+function exitDashboard(){
+  state.dashboardMode = false;
+  document.getElementById("devSwitcher").style.display = "flex";
+  document.querySelector("footer.test-footer").style.display = "block";
+  renderPartTabs(); renderModule(); renderPalette();
+}
+
+function renderDashboard(){
+  const root = document.getElementById("moduleRoot");
+  const available = ["listening","reading","writing"].filter(m => state.results[m]);
+  const current = state.dashboardModule;
+
+  let tabsHtml = available.map(m =>
+    `<button class="part-tab dash-tab ${m===current?'active':''}" data-dash="${m}">${MODULE_CONFIG[m].label}</button>`
+  ).join("");
+
+  let bodyHtml = "";
+  const res = state.results[current];
+  if (current === "writing"){
+    bodyHtml += `<p><em>Writing is not auto-scored here — a Task response needs a human (or tutor) assessment against the official band descriptors. Word counts and your submitted text are shown below for review.</em></p>`;
+    res.tasks.forEach(t => {
+      bodyHtml += `<div class="qblock"><h3>Task ${t.task} — ${t.words} words ${t.meetsMin ? "(meets minimum)" : "(below minimum)"}</h3>
+        <div class="note-block" style="white-space:pre-wrap;">${esc(t.text || "(no response submitted)")}</div></div>`;
+    });
+  } else {
+    bodyHtml += `<div class="qblock"><h3>Score summary</h3>
+      <p><strong>Raw score:</strong> ${res.raw} / ${res.max} &nbsp; <strong>Estimated band:</strong> ${res.band !== null ? res.band.toFixed(1) : "N/A"}</p>
+      <p><em>This is an approximate, indicative conversion for practice purposes, not an official IELTS score. An overall IELTS band also requires Writing and Speaking results, which aren't auto-graded here.</em></p>
+      </div>`;
+    bodyHtml += `<div class="qblock"><h3>Question-by-question review</h3><table style="width:100%; border-collapse:collapse;" id="reviewTable">
+      <tr style="text-align:left; border-bottom:1px solid var(--border-mid);"><th style="padding:6px;">Q</th><th style="padding:6px;">Your answer</th><th style="padding:6px;">Correct answer</th><th style="padding:6px;">Result</th></tr>
+      ${res.rows.map(r => `<tr style="border-bottom:1px solid var(--border-light);">
+        <td style="padding:6px;">${r.id}</td>
+        <td style="padding:6px;">${esc(r.userAnswer)}</td>
+        <td style="padding:6px;">${esc(r.correctAnswer)}</td>
+        <td style="padding:6px; color:${r.correct ? '#1a7a1a' : 'var(--danger)'}; font-weight:bold;">${r.correct ? "Correct" : `Incorrect (${r.earned}/${r.marks})`}</td>
+      </tr>`).join("")}
+      </table></div>`;
+  }
+
+  root.innerHTML = `
+    <div class="full-pane results-report">
+      <h2 style="margin-top:0;">Results — ${MODULE_CONFIG[current].label}</h2>
+      <div class="part-tabs">${tabsHtml}</div>
+      ${bodyHtml}
+      <div class="modal-actions" style="justify-content:flex-start; margin-top:20px;">
+        <button class="icon-btn" id="printReportBtn">Print report</button>
+        <button class="icon-btn" id="downloadReportBtn">Download as text</button>
+        <button class="icon-btn" id="backToTestBtn">Back to test</button>
+      </div>
+    </div>`;
+
+  root.querySelectorAll(".dash-tab").forEach(btn => {
+    btn.addEventListener("click", () => { state.dashboardModule = btn.dataset.dash; renderDashboard(); });
+  });
+  document.getElementById("printReportBtn").addEventListener("click", () => window.print());
+  document.getElementById("downloadReportBtn").addEventListener("click", () => downloadReport(current, res));
+  document.getElementById("backToTestBtn").addEventListener("click", exitDashboard);
+}
+
+function downloadReport(module, res){
+  let text = `IELTS Mock Test Report - ${MODULE_CONFIG[module].label}\n\n`;
+  if (module === "writing"){
+    res.tasks.forEach(t => { text += `Task ${t.task}: ${t.words} words (${t.meetsMin ? "meets minimum" : "below minimum"})\n${t.text}\n\n`; });
+  } else {
+    text += `Raw score: ${res.raw} / ${res.max}\nEstimated band: ${res.band !== null ? res.band.toFixed(1) : "N/A"} (approximate, indicative only)\n\n`;
+    res.rows.forEach(r => { text += `Q${r.id}: your answer = "${r.userAnswer}" | correct = "${r.correctAnswer}" | ${r.correct ? "Correct" : "Incorrect"}\n`; });
+  }
+  const href = "data:text/plain;charset=utf-8," + encodeURIComponent(text);
+  const a = document.createElement("a");
+  a.href = href;
+  a.download = `ielts-report-${module}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+/* ===================== RENDER DISPATCH ===================== */
+function renderModule(){
+  if (state.module === "listening") renderListening();
+  else if (state.module === "reading") renderReading();
+  else renderWriting();
+}
+
+/* ===================== HIGHLIGHT & NOTE TOOL (works on any .highlightable-zone) ===================== */
+let pendingRange = null;
+let activeNoteSpan = null;
+const workArea = document.getElementById("workArea");
+const selectionToolbar = document.getElementById("selectionToolbar");
+const notePopup = document.getElementById("notePopup");
+const noteViewer = document.getElementById("noteViewer");
+
+function positionNear(el, rect){
+  const areaRect = workArea.getBoundingClientRect();
+  const top = rect.bottom - areaRect.top + workArea.scrollTop + 8;
+  const left = Math.max(rect.left - areaRect.left + workArea.scrollLeft, 4);
+  el.style.top = `${top}px`;
+  el.style.left = `${left}px`;
+}
+function showToolbar(range){ positionNear(selectionToolbar, range.getBoundingClientRect()); selectionToolbar.classList.add("open"); }
+function hideToolbar(){ selectionToolbar.classList.remove("open"); }
+function showNotePopup(range){
+  positionNear(notePopup, range.getBoundingClientRect());
+  document.getElementById("noteTextarea").value = "";
+  notePopup.classList.add("open");
+  document.getElementById("noteTextarea").focus();
+}
+function hideNotePopup(){ notePopup.classList.remove("open"); }
+function showNoteViewer(span){
+  activeNoteSpan = span;
+  positionNear(noteViewer, span.getBoundingClientRect());
+  document.getElementById("noteViewerText").textContent = span.getAttribute("data-note") || "(empty note)";
+  noteViewer.classList.add("open");
+}
+function hideNoteViewer(){ noteViewer.classList.remove("open"); activeNoteSpan = null; }
+
+function wrapRange(range, className){
+  const span = document.createElement("span");
+  span.className = className;
+  try { range.surroundContents(span); }
+  catch(err){ const contents = range.extractContents(); span.appendChild(contents); range.insertNode(span); }
+  return span;
+}
+
+document.addEventListener("mouseup", (e) => {
+  if (e.target.closest("#selectionToolbar") || e.target.closest("#notePopup") || e.target.closest("#noteViewer")) return;
+  const sel = window.getSelection();
+  if (!sel || sel.toString().trim().length === 0){ if (!e.target.closest(".user-note")) hideToolbar(); return; }
+  const anchorZone = sel.anchorNode && (sel.anchorNode.nodeType === 3 ? sel.anchorNode.parentElement : sel.anchorNode).closest(".highlightable-zone");
+  const focusZone = sel.focusNode && (sel.focusNode.nodeType === 3 ? sel.focusNode.parentElement : sel.focusNode).closest(".highlightable-zone");
+  if (anchorZone && anchorZone === focusZone){
+    pendingRange = sel.getRangeAt(0).cloneRange();
+    showToolbar(pendingRange);
+  } else {
+    hideToolbar();
+  }
+});
+document.getElementById("toolbarHighlight").addEventListener("click", () => {
+  if (!pendingRange) return;
+  wrapRange(pendingRange, "user-highlight");
+  window.getSelection().removeAllRanges();
+  pendingRange = null; hideToolbar();
+});
+document.getElementById("toolbarNote").addEventListener("click", () => { if (pendingRange) showNotePopup(pendingRange); });
+document.getElementById("noteCancelBtn").addEventListener("click", () => { hideNotePopup(); window.getSelection().removeAllRanges(); pendingRange = null; });
+document.getElementById("noteSaveBtn").addEventListener("click", () => {
+  if (!pendingRange){ hideNotePopup(); return; }
+  const text = document.getElementById("noteTextarea").value.trim();
+  const span = wrapRange(pendingRange, "user-note");
+  span.setAttribute("data-note", text || "(empty note)");
+  window.getSelection().removeAllRanges();
+  pendingRange = null; hideNotePopup(); hideToolbar();
+});
+document.addEventListener("click", (e) => {
+  const noteSpan = e.target.closest(".user-note");
+  if (noteSpan) showNoteViewer(noteSpan);
+  else if (!e.target.closest("#noteViewer")) hideNoteViewer();
+});
+document.getElementById("noteCloseBtn").addEventListener("click", hideNoteViewer);
+document.getElementById("noteDeleteBtn").addEventListener("click", () => {
+  if (activeNoteSpan){
+    const parent = activeNoteSpan.parentNode;
+    while (activeNoteSpan.firstChild) parent.insertBefore(activeNoteSpan.firstChild, activeNoteSpan);
+    parent.removeChild(activeNoteSpan);
+  }
+  hideNoteViewer();
+});
+
+/* ===================== SMALL RENDER HELPERS ===================== */
+function esc(str){
+  return String(str).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+}
+function renderTemplateWithInputs(template, ids){
+  return esc(template).replace(/\{\{(\d+)\}\}/g, (m, n) => {
+    const id = +n;
+    const existing = state.responses[state.module][id] || "";
+    return `<input type="text" class="inline-input resp-input" data-id="${id}" value="${esc(existing)}">`;
+  });
+}
+function attachInputHandlers(root){
+  root.querySelectorAll(".resp-input").forEach(inp => {
+    inp.addEventListener("input", () => setResponse(state.module, +inp.dataset.id, inp.value));
+  });
+  root.querySelectorAll(".resp-select").forEach(sel => {
+    sel.addEventListener("change", () => setResponse(state.module, +sel.dataset.id, sel.value));
+  });
+  root.querySelectorAll(".resp-radio").forEach(r => {
+    r.addEventListener("change", () => setResponse(state.module, +r.name.replace("q",""), r.value));
+  });
+  root.querySelectorAll(".resp-checkbox").forEach(cb => {
+    cb.addEventListener("click", (e) => {
+      const gKey = cb.dataset.group, max = +cb.dataset.max;
+      const current = state.responses.listening[gKey] || [];
+      if (cb.checked && current.length >= max){
+        e.preventDefault(); cb.checked = false; return;
+      }
+      const next = cb.checked ? [...current, cb.value] : current.filter(v => v !== cb.value);
+      state.responses.listening[gKey] = next;
+      renderPalette();
+    });
+  });
+}
+
+/* ===================== LISTENING ===================== */
+function speak(text, onDone){
+  if (!("speechSynthesis" in window)){ onDone(); return; }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = 0.95;
+  utter.onend = onDone;
+  utter.onerror = onDone;
+  window.speechSynthesis.speak(utter);
+}
+
+function renderListening(){
+  const root = document.getElementById("moduleRoot");
+  const partIdx = state.currentPart;
+  const partKey = ["part1","part2","part3","part4"][partIdx];
+  const part = TEST_CONTENT.listening[partKey];
+  const started = state.audioStarted.listening[partIdx];
+
+  if (!started){
+    root.innerHTML = `
+      <div class="full-pane">
+        <div class="gate-screen">
+          <h2>${currentConfig().parts[partIdx]} — ${esc(part.topic)}</h2>
+          <p>This section's audio plays once you press Start. Once it begins, it cannot be paused or replayed, just like the real test. Read the questions below carefully first.</p>
+          <button class="start-btn" id="startAudioBtn">Start ${currentConfig().parts[partIdx]} Recording</button>
+        </div>
+        <div id="preReadQuestions"></div>
+      </div>`;
+    renderListeningQuestions(document.getElementById("preReadQuestions"), partKey, partIdx, true);
+    document.getElementById("startAudioBtn").addEventListener("click", () => {
+      state.audioPlaying = true;
+      renderPartTabs();
+      const badge = document.createElement("div");
+      badge.className = "playing-badge";
+      badge.id = "playingBadge";
+      badge.textContent = "🔊 Recording playing — navigation is locked until it finishes";
+      document.querySelector(".gate-screen").appendChild(badge);
+      document.getElementById("startAudioBtn").disabled = true;
+      speak(part.transcript, () => {
+        state.audioPlaying = false;
+        state.audioStarted.listening[partIdx] = true;
+        renderPartTabs();
+        renderListening();
+      });
+    });
+    return;
+  }
+
+  root.innerHTML = `<div class="full-pane" id="listeningQuestions"></div>`;
+  renderListeningQuestions(document.getElementById("listeningQuestions"), partKey, partIdx, false);
+}
+
+function renderListeningQuestions(container, partKey, partIdx, preRead){
+  let html = "";
+  if (partKey === "part1" || partKey === "part4"){
+    const part = TEST_CONTENT.listening[partKey];
+    html += `<h3 style="margin-top:0;">${esc(part.instructions)}</h3>`;
+    html += `<div class="note-block">${renderTemplateWithInputs(part.noteTemplate, part.questions.map(q=>q.id))}</div>`;
+  } else if (partKey === "part2"){
+    const part = TEST_CONTENT.listening.part2;
+    html += `<h3 style="margin-top:0;">${esc(part.matching.instructions)}</h3>`;
+    html += `<div class="options-box">${part.matching.options.map(o => `<div class="opt-line"><strong>${o.key}.</strong> ${esc(o.label)}</div>`).join("")}</div>`;
+    part.matching.items.forEach(item => {
+      const val = state.responses.listening[item.id] || "";
+      html += `<div class="qblock" id="q-block-${item.id}"><span class="qnum">${item.id}</span>${esc(item.label)}
+        <select class="inline-select resp-select" data-id="${item.id}">
+          <option value="">--</option>
+          ${part.matching.options.map(o => `<option value="${o.key}" ${val===o.key?"selected":""}>${o.key}</option>`).join("")}
+        </select></div>`;
+    });
+    part.multiSelect.forEach(g => {
+      const gKey = g.ids.join("_");
+      const selected = state.responses.listening[gKey] || [];
+      html += `<div class="qblock" id="q-block-${g.ids[0]}">
+        <h3>${esc(g.instructions)}</h3>
+        <div class="options-box">
+          ${g.options.map(o => `<div class="checkbox-row"><input type="checkbox" class="resp-checkbox" data-group="${gKey}" data-max="${g.ids.length}" value="${o.key}" ${selected.includes(o.key)?"checked":""}> <label>${o.key}. ${esc(o.label)}</label></div>`).join("")}
+        </div></div>`;
+      html += `<div class="qblock" id="q-block-${g.ids[1]}" style="display:none;"></div>`;
+    });
+  } else if (partKey === "part3"){
+    const part = TEST_CONTENT.listening.part3;
+    html += `<h3 style="margin-top:0;">${esc(part.multipleChoice.instructions)}</h3>`;
+    part.multipleChoice.items.forEach(item => {
+      const val = state.responses.listening[item.id] || "";
+      html += `<div class="qblock" id="q-block-${item.id}"><div class="qtext"><span class="qnum">${item.id}</span>${esc(item.question)}</div>`;
+      item.options.forEach(o => {
+        html += `<div class="radio-row"><input type="radio" class="resp-radio" name="q${item.id}" value="${o.key}" id="r-${item.id}-${o.key}" ${val===o.key?"checked":""}><label for="r-${item.id}-${o.key}">${o.key}. ${esc(o.label)}</label></div>`;
+      });
+      html += `</div>`;
+    });
+    html += `<h3>${esc(part.flowchart.instructions)}</h3>`;
+    html += `<div class="options-box">${part.flowchart.options.map(o => `<div class="opt-line"><strong>${o.key}.</strong> ${esc(o.label)}</div>`).join("")}</div>`;
+    html += `<ul class="flow-list">`;
+    part.flowchart.steps.forEach(step => {
+      const val = state.responses.listening[step.id] || "";
+      html += `<li id="q-block-${step.id}"><span class="qnum">${step.id}</span>
+        <select class="inline-select resp-select" data-id="${step.id}">
+          <option value="">--</option>
+          ${part.flowchart.options.map(o => `<option value="${o.key}" ${val===o.key?"selected":""}>${o.key}</option>`).join("")}
+        </select></li>`;
+    });
+    html += `</ul>`;
+  }
+  container.innerHTML = html;
+  attachInputHandlers(container);
+}
+
+/* ===================== READING ===================== */
+function renderReading(){
+  const root = document.getElementById("moduleRoot");
+  const idx = state.currentPart;
+  if (idx === 0){
+    const p = TEST_CONTENT.reading.passage1;
+    root.innerHTML = `
+      <div class="split-pane" id="splitPane">
+        <div class="split-left highlightable-zone">
+          <div class="passage-title">${esc(p.title)}</div>
+          <div class="passage-body">${esc(p.body)}</div>
+        </div>
+        <div class="split-divider" id="splitDivider"></div>
+        <div class="split-right" id="rightPane"></div>
+      </div>`;
+    const right = document.getElementById("rightPane");
+    let html = `<h3 style="margin-top:0;">${esc(p.trueFalseNotGiven.instructions)}</h3>`;
+    p.trueFalseNotGiven.items.forEach(item => {
+      const val = state.responses.reading[item.id] || "";
+      html += `<div class="qblock" id="q-block-${item.id}"><div class="qtext"><span class="qnum">${item.id}</span>${esc(item.statement)}</div>`;
+      ["TRUE","FALSE","NOT GIVEN"].forEach(opt => {
+        html += `<div class="radio-row"><input type="radio" class="resp-radio" name="q${item.id}" value="${opt}" id="r-${item.id}-${opt}" ${val===opt?"checked":""}><label for="r-${item.id}-${opt}">${opt}</label></div>`;
+      });
+      html += `</div>`;
+    });
+    html += `<h3>${esc(p.noteCompletion.instructions)}</h3>`;
+    html += `<div class="note-block">${renderTemplateWithInputs(p.noteCompletion.template, p.noteCompletion.questions.map(q=>q.id))}</div>`;
+    right.innerHTML = html;
+    attachInputHandlers(right);
+    setupDivider();
+  } else if (idx === 1){
+    const p = TEST_CONTENT.reading.passage2;
+    root.innerHTML = `
+      <div class="split-pane" id="splitPane">
+        <div class="split-left highlightable-zone" id="leftPane">
+          <div class="passage-title">${esc(p.title)}</div>
+        </div>
+        <div class="split-divider" id="splitDivider"></div>
+        <div class="split-right" id="rightPane"></div>
+      </div>`;
+    const left = document.getElementById("leftPane");
+    Object.entries(p.paragraphs).forEach(([label, text]) => {
+      const div = document.createElement("div");
+      div.className = "paragraph-block";
+      div.innerHTML = `<span class="paragraph-label">${label}</span>${esc(text)}`;
+      left.appendChild(div);
+    });
+    const right = document.getElementById("rightPane");
+    let html = `<h3 style="margin-top:0;">${esc(p.matchingParagraphs.instructions)}</h3>`;
+    p.matchingParagraphs.items.forEach(item => {
+      const val = state.responses.reading[item.id] || "";
+      html += `<div class="qblock" id="q-block-${item.id}"><span class="qnum">${item.id}</span>${esc(item.statement)}
+        <select class="inline-select resp-select" data-id="${item.id}"><option value="">--</option>
+        ${"ABCDEFGH".split("").map(k => `<option value="${k}" ${val===k?"selected":""}>${k}</option>`).join("")}
+        </select></div>`;
+    });
+    html += `<h3>${esc(p.sentenceCompletion.instructions)}</h3>`;
+    p.sentenceCompletion.items.forEach(item => {
+      const val = state.responses.reading[item.id] || "";
+      const sentence = item.sentence.replace("______", `<input type="text" class="inline-input resp-input" data-id="${item.id}" value="${esc(val)}">`);
+      html += `<div class="qblock" id="q-block-${item.id}"><span class="qnum">${item.id}</span>${sentence}</div>`;
+    });
+    html += `<h3>${esc(p.matchingExperts.instructions)}</h3>`;
+    html += `<div class="options-box">${p.matchingExperts.experts.map(e => `<div class="opt-line"><strong>${e.key}.</strong> ${esc(e.name)}</div>`).join("")}</div>`;
+    p.matchingExperts.items.forEach(item => {
+      const val = state.responses.reading[item.id] || "";
+      html += `<div class="qblock" id="q-block-${item.id}"><span class="qnum">${item.id}</span>${esc(item.statement)}
+        <select class="inline-select resp-select" data-id="${item.id}"><option value="">--</option>
+        ${p.matchingExperts.experts.map(e => `<option value="${e.key}" ${val===e.key?"selected":""}>${e.key}</option>`).join("")}
+        </select></div>`;
+    });
+    right.innerHTML = html;
+    attachInputHandlers(right);
+    setupDivider();
+  } else {
+    const p = TEST_CONTENT.reading.passage3;
+    root.innerHTML = `
+      <div class="split-pane" id="splitPane">
+        <div class="split-left highlightable-zone">
+          <div class="passage-title">${esc(p.title)}</div>
+          <div class="passage-body">${esc(p.body)}</div>
+        </div>
+        <div class="split-divider" id="splitDivider"></div>
+        <div class="split-right" id="rightPane"></div>
+      </div>`;
+    const right = document.getElementById("rightPane");
+    let html = `<h3 style="margin-top:0;">${esc(p.multipleChoice.instructions)}</h3>`;
+    p.multipleChoice.items.forEach(item => {
+      const val = state.responses.reading[item.id] || "";
+      html += `<div class="qblock" id="q-block-${item.id}"><div class="qtext"><span class="qnum">${item.id}</span>${esc(item.question)}</div>`;
+      item.options.forEach(o => {
+        html += `<div class="radio-row"><input type="radio" class="resp-radio" name="q${item.id}" value="${o.key}" id="r-${item.id}-${o.key}" ${val===o.key?"checked":""}><label for="r-${item.id}-${o.key}">${o.key}. ${esc(o.label)}</label></div>`;
+      });
+      html += `</div>`;
+    });
+    html += `<h3>${esc(p.sentenceCompletionMatching.instructions)}</h3>`;
+    html += `<div class="options-box">${p.sentenceCompletionMatching.endings.map(e => `<div class="opt-line"><strong>${e.key}.</strong> ${esc(e.label)}</div>`).join("")}</div>`;
+    p.sentenceCompletionMatching.items.forEach(item => {
+      const val = state.responses.reading[item.id] || "";
+      html += `<div class="qblock" id="q-block-${item.id}"><span class="qnum">${item.id}</span>${esc(item.stem)}...
+        <select class="inline-select resp-select" data-id="${item.id}"><option value="">--</option>
+        ${p.sentenceCompletionMatching.endings.map(e => `<option value="${e.key}" ${val===e.key?"selected":""}>${e.key}</option>`).join("")}
+        </select></div>`;
+    });
+    html += `<h3>${esc(p.yesNoNotGiven.instructions)}</h3>`;
+    p.yesNoNotGiven.items.forEach(item => {
+      const val = state.responses.reading[item.id] || "";
+      html += `<div class="qblock" id="q-block-${item.id}"><div class="qtext"><span class="qnum">${item.id}</span>${esc(item.statement)}</div>`;
+      ["YES","NO","NOT GIVEN"].forEach(opt => {
+        html += `<div class="radio-row"><input type="radio" class="resp-radio" name="q${item.id}" value="${opt}" id="r-${item.id}-${opt}" ${val===opt?"checked":""}><label for="r-${item.id}-${opt}">${opt}</label></div>`;
+      });
+      html += `</div>`;
+    });
+    right.innerHTML = html;
+    attachInputHandlers(right);
+    setupDivider();
+  }
+}
+
+function setupDivider(){
+  const divider = document.getElementById("splitDivider");
+  const pane = document.getElementById("splitPane");
+  const left = pane.querySelector(".split-left");
+  if (!divider) return;
+  let dragging = false;
+  divider.addEventListener("mousedown", () => { dragging = true; document.body.style.userSelect = "none"; });
+  document.addEventListener("mousemove", (e) => {
+    if (!dragging) return;
+    const rect = pane.getBoundingClientRect();
+    if (rect.width === 0) return;
+    let pct = ((e.clientX - rect.left) / rect.width) * 100;
+    pct = Math.min(80, Math.max(20, pct));
+    left.style.flexBasis = pct + "%";
+  });
+  document.addEventListener("mouseup", () => { dragging = false; document.body.style.userSelect = ""; });
+}
+
+/* ===================== WRITING ===================== */
+function renderWriting(){
+  const root = document.getElementById("moduleRoot");
+  const taskKey = state.currentPart === 0 ? "task1" : "task2";
+  const task = TEST_CONTENT.writing[taskKey];
+  const qId = state.currentPart + 1;
+  const savedText = state.responses.writing[qId] || "";
+
+  root.innerHTML = `
+    <div class="writing-tabs">
+      <button class="writing-tab ${state.currentPart===0?'active':''}" data-task="0">Task 1</button>
+      <button class="writing-tab ${state.currentPart===1?'active':''}" data-task="1">Task 2</button>
+    </div>
+    <div class="split-pane" id="splitPane">
+      <div class="split-left highlightable-zone">
+        <p><strong>${task.minutes} minutes — at least ${task.minWords} words</strong></p>
+        <p>${esc(task.prompt)}</p>
+        ${taskKey === "task1" ? `<div class="diagram-steps">${task.processSteps.map((s,i) => `<div class="diagram-step">${i+1}. ${esc(s)}</div>` + (i < task.processSteps.length-1 ? `<div class="diagram-arrow">&#8595;</div>` : "")).join("")}</div>` : ""}
+      </div>
+      <div class="split-divider" id="splitDivider"></div>
+      <div class="split-right" id="rightPane">
+        <textarea class="writing-textarea" id="writingArea" placeholder="Start writing your response here...">${esc(savedText)}</textarea>
+        <div class="word-counter" id="wordCounter">Words: 0</div>
+      </div>
+    </div>`;
+
+  root.querySelectorAll(".writing-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.currentPart = +btn.dataset.task;
+      state.currentQuestion = state.currentPart + 1;
+      renderPartTabs();
+      renderWriting();
+    });
+  });
+
+  const textarea = document.getElementById("writingArea");
+  const counter = document.getElementById("wordCounter");
+  function updateCount(){
+    const words = textarea.value.trim().length ? textarea.value.trim().split(/\s+/).length : 0;
+    counter.textContent = `Words: ${words}`;
+    counter.classList.toggle("below-min", words < task.minWords);
+    setResponse("writing", qId, textarea.value);
+  }
+  textarea.addEventListener("input", updateCount);
+  updateCount();
+  setupDivider();
+}
+
+/* ===================== INIT ===================== */
+renderPartTabs();
+renderModule();
+renderPalette();
+startTimer();
+</script>
+</body>
+</html>
